@@ -8,26 +8,24 @@
   var PAGES = [
     { slug: "", label: "Accueil" },
     { slug: "entreprises", label: "Code Entreprises" },
+    { slug: "citoyens", label: "Code Citoyen" },
     { slug: "impots", label: "Impôts" },
     { slug: "fiscalite", label: "Fiscalité" },
     { slug: "droits", label: "Droits du contribuable" },
     { slug: "organisation", label: "Organisation IRS" },
     { slug: "codePenal", label: "Code pénal (extraits)" },
-    { slug: "calculateur", label: "Calculateur" },
-    { slug: "references", label: "Références US" },
-    { slug: "journal", label: "Journal des modifications" }
+    { slug: "calculateur", label: "Calculateur" }
   ];
 
   var DESCRIPTIONS = {
     entreprises: "Règles encadrant les entreprises de San Andreas",
+    citoyens: "Règles qui s'appliquent à chaque citoyen",
     impots: "Déclaration, paiement, difficultés de paiement",
     fiscalite: "Contrôles, enquêtes, barème des sanctions, recouvrement",
     droits: "Droits face à l'IRS et déroulé d'un contrôle",
     organisation: "Postes, pouvoirs et devoirs des agents",
-    codePenal: "Articles du code pénal du serveur utiles à l'IRS",
-    calculateur: "Calcul indicatif des amendes",
-    references: "Textes de loi américains ayant servi de base",
-    journal: "Changements et points à valider par le staff"
+    codePenal: "Articles du code pénal utiles à l'IRS",
+    calculateur: "Calcul indicatif des amendes"
   };
 
   // ---------- Utilitaires ----------
@@ -80,16 +78,13 @@
   }
 
   function card(slug, a) {
-    var badge = a.proposition ? '<span class="badge">PROPOSITION - à valider par le staff</span>' : "";
     return '<details class="card" open id="' + esc(a.id) + '" data-search="' +
-      esc(norm([a.title, a.body, a.penal, a.us, a.effect, a.change].join(" "))) + '">' +
-      "<summary>" + esc(a.title) + ' <span class="ref">- ' + esc(a.id) + "</span>" + badge +
+      esc(norm([a.title, a.body, a.penal, a.effect].join(" "))) + '">' +
+      "<summary>" + esc(a.title) + ' <span class="ref">- ' + esc(a.id) + "</span>" +
       '<button class="btn copy" data-link="#/' + slug + "/" + esc(a.id) + '">Copier le lien</button></summary>' +
       '<div class="card-body">' + fmt(a.body) +
       sub("effect", "Sanction / effet", a.effect, true) +
-      sub("penal", "Code pénal serveur (MDT)", a.penal) +
-      sub("us", "Base légale réelle (USA)", a.us) +
-      sub("change", "Changement", a.change) +
+      sub("penal", "Code pénal", a.penal) +
       "</div></details>";
   }
 
@@ -112,15 +107,16 @@
   }
 
   function pageHome() {
-    var tiles = PAGES.slice(1).map(function (p) {
+    var tiles = PAGES.slice(1).filter(function (p) { return !p.hidden; }).map(function (p) {
       var n = countOf(p.slug);
       return '<a class="tile" href="#/' + p.slug + '"><b>' + esc(p.label) + "</b><span>" +
         esc(DESCRIPTIONS[p.slug]) + (n ? " - " + n + " entrées" : "") + "</span></a>";
     }).join("");
-    return head("Guide IRS - San Andreas", "31/10/2026") +
+    return '<div class="hero"><img src="assets/seal.svg" alt="Sceau de l\'IRS">' +
+      '<div><div class="hero-kicker">État de San Andreas</div><h1>Guide de l\'Internal Revenue Service</h1>' +
+      '<div class="stars">★ ★ ★</div><div class="updated">Mise à jour : 22/11/2026</div></div></div>' +
       '<div class="notice">' + fmt(G.organisation.intro) + "</div>" +
-      '<div class="notice">Le code pénal du serveur (MDT DOJ) prime sur ce guide. ' +
-      'Les éléments marqués <span class="badge">PROPOSITION</span> ne s\'appliquent qu\'après validation du staff.</div>' +
+      '<div class="notice">Le code pénal de San Andreas prime sur ce guide.</div>' +
       '<div class="grid">' + tiles + "</div>";
   }
 
@@ -140,17 +136,15 @@
     var d = G.fiscalite;
     var proc = d.articles.slice(0, 3), enq = d.articles.slice(3);
     var rows = d.bareme.map(function (b) {
-      return '<tr class="' + (b.proposition ? "prop" : "") + '" data-search="' +
-        esc(norm([b.infraction, b.type1, b.type2, b.penal, b.us].join(" "))) + '">' +
-        "<td>" + (b.proposition ? '<span class="badge">PROPOSITION</span> ' : "") + esc(b.infraction) + "</td>" +
-        "<td>" + esc(b.type1) + "</td><td>" + esc(b.type2) + "</td><td>" + esc(b.penal) + "</td></tr>" +
-        '<tr class="detail"><td colspan="4">Base US : ' + esc(b.us) + "</td></tr>";
+      return '<tr data-search="' + esc(norm([b.infraction, b.type1, b.type2, b.penal].join(" "))) + '">' +
+        "<td>" + esc(b.infraction) + "</td>" +
+        "<td>" + esc(b.type1) + "</td><td>" + esc(b.type2) + "</td><td>" + esc(b.penal) + "</td></tr>";
     }).join("");
     return head(d.label, d.updated, true) +
       "<h2>Procédure</h2>" + proc.map(function (a) { return card("fiscalite", a); }).join("") +
       "<h2>Barème des sanctions</h2>" +
       '<div class="table-wrap"><table><thead><tr><th>Infraction</th><th>Type 1 : première fois</th>' +
-      "<th>Type 2 : récidive</th><th>Code pénal serveur</th></tr></thead><tbody>" + rows + "</tbody></table></div>" +
+      "<th>Type 2 : récidive</th><th>Code pénal</th></tr></thead><tbody>" + rows + "</tbody></table></div>" +
       "<h2>Enquêtes et recouvrement</h2>" + enq.map(function (a) { return card("fiscalite", a); }).join("") +
       "<h2>Fraude fiscale et optimisation</h2>" + '<div class="notice">' + fmt(d.fraude) + "</div>";
   }
@@ -167,59 +161,41 @@
     return html;
   }
 
+  // Code pénal réduit : chaque groupe est replié, la recherche de la page le rouvre
   function pageCodePenal() {
-    return pageGroups("codePenal", ["Article", "Résumé", "Usage pour l'IRS"], function (it) {
-      return '<tr data-search="' + esc(norm(it.article + " " + it.resume + " " + it.usage)) + '"><td><b>' +
-        esc(it.article) + "</b></td><td>" + esc(it.resume) + "</td><td>" + esc(it.usage) + "</td></tr>";
+    var d = G.codePenal;
+    var html = head(d.label, "", true) +
+      '<div class="notice">Extraits du code pénal de San Andreas, qui prime sur ce guide. Cliquer sur un groupe pour l\'ouvrir.</div>';
+    d.groups.forEach(function (g) {
+      html += '<details class="cp-group"><summary>' + esc(g.title) + " <span>" + g.items.length + "</span></summary>" +
+        '<div class="table-wrap"><table><thead><tr><th>Article</th><th>Résumé</th><th>Usage pour l\'IRS</th></tr></thead><tbody>' +
+        g.items.map(function (it) {
+          return '<tr data-search="' + esc(norm(it.article + " " + it.resume + " " + it.usage)) + '"><td><b>' +
+            esc(it.article) + "</b></td><td>" + esc(it.resume) + "</td><td>" + esc(it.usage) + "</td></tr>";
+        }).join("") + "</tbody></table></div></details>";
     });
-  }
-
-  function pageReferences() {
-    return pageGroups("references", ["Texte", "Objet", "Lien"], function (it) {
-      return '<tr data-search="' + esc(norm(it.texte + " " + it.objet)) + '"><td><b>' + esc(it.texte) +
-        "</b></td><td>" + esc(it.objet) + '</td><td><a href="' + esc(it.url) +
-        '" target="_blank" rel="noopener">Ouvrir</a></td></tr>';
-    });
-  }
-
-  function pageJournal() {
-    var d = G.journal;
-    var types = [];
-    d.items.forEach(function (it) { if (types.indexOf(it.type) < 0) types.push(it.type); });
-    var rows = d.items.map(function (it) {
-      return '<tr data-type="' + esc(it.type) + '" data-search="' +
-        esc(norm([it.type, it.onglet, it.article, it.detail].join(" "))) + '"><td><span class="pill ' +
-        esc(it.type) + '">' + esc(it.type) + "</span></td><td>" + esc(it.onglet) + "</td><td>" +
-        esc(it.article) + "</td><td>" + esc(it.detail) + "</td></tr>";
-    }).join("");
-    return '<div class="page-head"><div><h1>' + esc(d.label) + "</h1>" +
-      '<div class="updated">Base : version du 17/07/2025 (Code Entreprises, Impôts) et du 26/05/2025 (Fiscalité)</div></div>' +
-      '<div class="toolbar"><input type="search" id="pageSearch" placeholder="Filtrer...">' +
-      '<select id="typeFilter"><option value="">Tous les types</option>' +
-      types.map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("") + "</select></div></div>" +
-      '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Onglet</th><th>Article</th><th>Détail</th></tr></thead><tbody>' +
-      rows + "</tbody></table></div>";
+    return html;
   }
 
   // ---------- Calculateur ----------
 
   var PENAL = [
     { id: "p71", label: "Art. 7.1 - Liquide sans justificatif (> 2 000 $)", rate: 0.5, note: "Amende de 50 % de la somme, et saisie de la somme." },
-    { id: "p72", label: "Art. 7.2 - Blanchiment", rate: 5, note: "5 $ x somme blanchie, plus prison fédérale (calculateur de peine MDT)." },
-    { id: "p74", label: "Art. 7.4 - Détournement de fonds", rate: 2, note: "2 $ x somme détournée, plus prison fédérale (calculateur de peine MDT)." },
-    { id: "p75", label: "Art. 7.5 - Fraude fiscale", rate: 2.5, note: "2,5 $ x somme non payée, plus prison fédérale (calculateur de peine MDT)." }
+    { id: "p72", label: "Art. 7.2 - Blanchiment", rate: 5, note: "5 $ x somme blanchie, plus prison fédérale (calculateur de peine du DOJ)." },
+    { id: "p74", label: "Art. 7.4 - Détournement de fonds", rate: 2, note: "2 $ x somme détournée, plus prison fédérale (calculateur de peine du DOJ)." },
+    { id: "p75", label: "Art. 7.5 - Fraude fiscale", rate: 2.5, note: "2,5 $ x somme non payée, plus prison fédérale (calculateur de peine du DOJ)." }
   ];
 
   function num(s) { return parseFloat(String(s).replace(/\s/g, "").replace(",", ".")) || 0; }
 
-  // Lit une ligne du bareme : montant fixe, unite, somme due, pourcentage d'interets
+  // Lit une ligne du bareme : montant fixe, unite, somme due, pourcentage d'interets ou du prix
   function parseBareme(text) {
-    var fixed = text.match(/^([\d\s.,]+)\s*\$/);
-    var pct = text.match(/(\d+)\s*%\s*d'int/);
+    var fixed = text.match(/(\d[\d\s.,]*)\s*\$/);
+    var pct = text.match(/(\d+)\s*%\s*(d'int|du prix d'achat)/);
     return {
       fixed: fixed ? num(fixed[1]) : 0,
       perUnit: /par (contrat|produit|personne|employé)|nombre de semaines/.test(text),
-      withSum: /somme (due|manquante)|trop-perçu/.test(text),
+      withSum: /somme (due|manquante)|trop-perçu|plus-value/i.test(text),
       pct: pct ? num(pct[1]) / 100 : 0,
       unit: /semaines/.test(text) ? "semaines" : (text.match(/par (contrat|produit|personne|employé)/) || [, "unités"])[1]
     };
@@ -231,7 +207,7 @@
         return '<option value="b' + i + '">' + esc(b.infraction) + "</option>";
       }).join("") + "</optgroup>";
     return head("Calculateur", "", false) +
-      '<div class="notice">Calcul indicatif. Les peines de prison, TIG et saisies se calculent avec le calculateur de peine du MDT.</div>' +
+      '<div class="notice">Calcul indicatif. Les peines de prison, TIG et saisies se calculent avec le calculateur de peine du DOJ.</div>' +
       '<div class="calc">' +
       '<label>Infraction<select id="cInf">' + opts + "</select></label>" +
       '<label id="cSumL">Somme concernée ($)<input id="cSum" type="text" inputmode="decimal" value="0"></label>' +
@@ -281,6 +257,7 @@
     function apply() {
       var q = norm(input.value).trim();
       var type = typeSel ? typeSel.value : "";
+      if (q) main.querySelectorAll("details.cp-group").forEach(function (d) { d.open = true; });
       main.querySelectorAll("[data-search]").forEach(function (el) {
         var ok = (!q || el.dataset.search.indexOf(q) >= 0) && (!type || el.dataset.type === type);
         el.style.display = ok ? "" : "none";
@@ -294,11 +271,11 @@
 
   var INDEX = [];
   function buildIndex() {
-    ["entreprises", "impots", "fiscalite", "droits", "organisation"].forEach(function (slug) {
+    ["entreprises", "citoyens", "impots", "fiscalite", "droits", "organisation"].forEach(function (slug) {
       var d = G[slug];
       d.articles.concat(d.etapes || []).forEach(function (a) {
         INDEX.push({ href: "#/" + slug + "/" + a.id, title: a.title, where: d.label,
-          text: norm([a.title, a.body, a.penal, a.us, a.effect].join(" ")) });
+          text: norm([a.title, a.body, a.penal, a.effect].join(" ")) });
       });
     });
     G.fiscalite.bareme.forEach(function (b) {
@@ -355,7 +332,7 @@
 
   // ---------- Routage ----------
 
-  document.getElementById("nav").innerHTML = PAGES.map(function (p) {
+  document.getElementById("nav").innerHTML = PAGES.filter(function (p) { return !p.hidden; }).map(function (p) {
     var n = countOf(p.slug);
     return '<a href="#/' + p.slug + '" data-slug="' + p.slug + '">' + esc(p.label) +
       (n ? "<span>" + n + "</span>" : "") + "</a>";
@@ -374,8 +351,6 @@
     if (slug === "") html = pageHome();
     else if (slug === "fiscalite") html = pageFiscalite();
     else if (slug === "codePenal") html = pageCodePenal();
-    else if (slug === "references") html = pageReferences();
-    else if (slug === "journal") html = pageJournal();
     else if (slug === "calculateur") html = pageCalc();
     else html = pageArticles(slug);
     main.innerHTML = html;
@@ -389,9 +364,10 @@
     bindPageSearch();
     var toggle = document.getElementById("toggleAll");
     if (toggle) {
+      if (slug === "codePenal") toggle.textContent = "Tout déplier";
       toggle.addEventListener("click", function () {
         var open = toggle.textContent === "Tout déplier";
-        main.querySelectorAll("details.card").forEach(function (d) { d.open = open; });
+        main.querySelectorAll("details.card, details.cp-group").forEach(function (d) { d.open = open; });
         toggle.textContent = open ? "Tout replier" : "Tout déplier";
       });
     }

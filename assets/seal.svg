@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sceau de l'Internal Revenue Service de San Andreas">
+  <defs>
+    <radialGradient id="gold" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#f6e3b4"/>
+      <stop offset=".55" stop-color="#d4b071"/>
+      <stop offset="1" stop-color="#a07a42"/>
+    </radialGradient>
+    <linearGradient id="rope" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d9a0"/>
+      <stop offset="1" stop-color="#b48a4c"/>
+    </linearGradient>
+    <path id="top" d="M 34,100 A 66,66 0 0,1 166,100"/>
+    <path id="bottom" d="M 23,100 A 77,77 0 0,0 177,100"/>
+  </defs>
+
+  <!-- Corde -->
+  <circle cx="100" cy="100" r="94" fill="none" stroke="url(#rope)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#7a5a2e" stroke-width="9" stroke-dasharray="1.6 3.4" opacity=".75"/>
+  <circle cx="100" cy="100" r="98.8" fill="none" stroke="#f1d9a0" stroke-width="1"/>
+  <circle cx="100" cy="100" r="89.2" fill="none" stroke="#f1d9a0" stroke-width="1"/>
+
+  <!-- Bandeau marine -->
+  <circle cx="100" cy="100" r="88.5" fill="#f3e1b0"/>
+  <circle cx="100" cy="100" r="86" fill="#111a35"/>
+
+  <!-- Textes du bandeau -->
+  <g font-family="Cinzel, 'Trajan Pro', Georgia, 'Times New Roman', serif" font-weight="700" fill="#f3e1b0">
+    <text font-size="13.5"><textPath href="#top" startOffset="50%" text-anchor="middle" textLength="196" lengthAdjust="spacing">INTERNAL REVENUE SERVICE</textPath></text>
+    <text font-size="11"><textPath href="#bottom" startOffset="50%" text-anchor="middle" letter-spacing="2">★ SAN ANDREAS ★</textPath></text>
+  </g>
+
+  <!-- Médaillon central -->
+  <circle cx="100" cy="100" r="59" fill="#f3e1b0"/>
+  <circle cx="100" cy="100" r="56" fill="url(#gold)"/>
+  <circle cx="100" cy="100" r="51" fill="none" stroke="#111a35" stroke-width=".8" opacity=".6"/>
+
+  <!-- Balance stylisée -->
+  <g stroke="#111a35" stroke-width="1.6" fill="none" stroke-linecap="round">
+    <line x1="100" y1="58" x2="100" y2="74"/>
+    <line x1="80" y1="63" x2="120" y2="63"/>
+    <path d="M 80,63 L 74,74 M 80,63 L 86,74 M 120,63 L 114,74 M 120,63 L 126,74"/>
+    <path d="M 73,74 Q 80,79 87,74 Z M 113,74 Q 120,79 127,74 Z" fill="#111a35"/>
+  </g>
+  <circle cx="100" cy="57" r="2" fill="#111a35"/>
+
+  <text x="100" y="115" text-anchor="middle" font-family="Cinzel, 'Trajan Pro', Georgia, 'Times New Roman', serif"
+        font-size="30" font-weight="700" fill="#111a35" letter-spacing="2">IRS</text>
+  <line x1="74" y1="123" x2="126" y2="123" stroke="#111a35" stroke-width="1"/>
+  <text x="100" y="138" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="9" fill="#111a35">★ ★ ★</text>
+</svg>

@@ -1,7 +1,7 @@
 # Guide IRS - San Andreas
 
-Site statique du guide de l'Internal Revenue Service (serveur GTA RP) : code entreprises, impôts, fiscalité, droits du contribuable, organisation, extraits du code pénal, calculateur d'amendes.
+Guide de l'Internal Revenue Service de l'État de San Andreas : code entreprises, code citoyen, impôts, fiscalité, droits du contribuable, organisation de l'IRS, extraits du code pénal, calculateur d'amendes et assistant de recherche.
 
-Aucune compilation : ouvrir `index.html` ou publier via GitHub Pages (Settings > Pages > Deploy from a branch > `main` / root).
+Site statique, sans compilation : ouvrir `index.html` ou le publier via GitHub Pages (Settings > Pages > Deploy from a branch > `main` / root).
 
-Le contenu est dans `assets/data.js`, généré depuis le classeur `Guide_IRS_RP_maj_2026-10-31.xlsx`.
+Le contenu du guide se trouve dans `assets/data.js`.
