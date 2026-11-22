@@ -174,6 +174,10 @@ window.IRS_INTENTS = [
     answer: "Un contrat de partenariat écrit, rédigé par un avocat et signé par les deux entreprises, est obligatoire. Absent ou obsolète : 1 000 $ par contrat.",
     refs: ["CE.22", "B.7"] },
 
+  { all: [["tombola", "tombolas", "loterie", "loteries", "lotterie", "lotteries", "tirage", "tirages"]],
+    answer: "Les tombolas et loteries entre particuliers sont interdites.\nUne entreprise ou un service public peut en organiser une si les termes du tirage et les gains sont inscrits par écrit avant la vente des tickets, et si le tirage se fait sous la direction d'un membre de l'IRS. La recette doit être déclarée.\nManquement : 5 000 $ + saisie de la recette. Recette de plus de 50 000 $ : 20 000 $ + saisie de la recette + transmission au DOJ.",
+    refs: ["CE.32", "CC.4", "B.21", "B.22"] },
+
   // ---------- Droits et IRS ----------
   { all: [["avocat", "represente", "representer", "assiste", "comptable"]],
     answer: "Oui, vous pouvez vous faire assister ou représenter par un avocat ou un comptable lors d'un contrôle.",
