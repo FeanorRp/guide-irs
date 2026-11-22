@@ -9,6 +9,7 @@
     { slug: "", label: "Accueil" },
     { slug: "entreprises", label: "Code Entreprises" },
     { slug: "citoyens", label: "Code Citoyen" },
+    { slug: "salaires", label: "Grille des salaires" },
     { slug: "impots", label: "Impôts" },
     { slug: "fiscalite", label: "Fiscalité" },
     { slug: "droits", label: "Droits du contribuable" },
@@ -20,6 +21,7 @@
   var DESCRIPTIONS = {
     entreprises: "Règles encadrant les entreprises de San Andreas",
     citoyens: "Règles qui s'appliquent à chaque citoyen",
+    salaires: "Salaires obligatoires par service et par entreprise",
     impots: "Déclaration, paiement, difficultés de paiement",
     fiscalite: "Contrôles, enquêtes, barème des sanctions, recouvrement",
     droits: "Droits face à l'IRS et déroulé d'un contrôle",
@@ -102,6 +104,7 @@
     if (d.articles) return d.articles.length + (d.bareme ? d.bareme.length : 0) + (d.etapes ? d.etapes.length : 0);
     if (d.groups) return d.groups.reduce(function (n, g) { return n + g.items.length; }, 0);
     if (d.items) return d.items.length;
+    if (d.sections) return d.sections.reduce(function (n, sec) { return n + sec.groups.length; }, 0);
     return "";
   }
 
@@ -155,6 +158,26 @@
         '<div class="table-wrap"><table><thead><tr>' +
         cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr></thead><tbody>" +
         g.items.map(render).join("") + "</tbody></table></div>";
+    });
+    return html;
+  }
+
+  // Grille des salaires : une carte par service ou entreprise, colonnes Sud / Nord si la grille dépend de la zone
+  function pageSalaires() {
+    var d = G.salaires;
+    var html = head(d.label, d.updated, true) + '<div class="notice">' + fmt(d.intro) + "</div>";
+    d.sections.forEach(function (sec) {
+      html += "<h2>" + esc(sec.title) + '</h2><div class="sal-grid">';
+      sec.groups.forEach(function (g) {
+        var rows = g.rows.map(function (r) {
+          return "<tr><td>" + esc(r[0]) + "</td>" + r.slice(1).map(function (v) { return '<td class="num">' + money(v) + "</td>"; }).join("") + "</tr>";
+        }).join("");
+        html += '<div class="sal-card" data-search="' + esc(norm(g.title + " " + g.rows.map(function (r) { return r[0]; }).join(" "))) + '">' +
+          "<h3>" + esc(g.title) + "</h3><table><thead><tr><th>Poste</th>" +
+          (g.zones ? '<th class="num">Sud</th><th class="num">Nord</th>' : '<th class="num">Salaire</th>') +
+          "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+      });
+      html += "</div>";
     });
     return html;
   }
@@ -280,6 +303,12 @@
       INDEX.push({ href: "#/fiscalite", title: b.infraction, where: "Barème des sanctions",
         text: norm([b.infraction, b.type1, b.type2, b.penal].join(" ")) });
     });
+    G.salaires.sections.forEach(function (sec) {
+      sec.groups.forEach(function (g) {
+        INDEX.push({ href: "#/salaires", title: "Salaires - " + g.title, where: "Grille des salaires",
+          text: norm("salaire salaires paye " + g.title + " " + g.rows.map(function (r) { return r[0]; }).join(" ")) });
+      });
+    });
     G.codePenal.groups.forEach(function (g) {
       g.items.forEach(function (it) {
         INDEX.push({ href: "#/codePenal", title: "Art. " + it.article + " - " + it.resume.slice(0, 70), where: "Code pénal",
@@ -349,6 +378,7 @@
     if (slug === "") html = pageHome();
     else if (slug === "fiscalite") html = pageFiscalite();
     else if (slug === "codePenal") html = pageCodePenal();
+    else if (slug === "salaires") html = pageSalaires();
     else if (slug === "calculateur") html = pageCalc();
     else html = pageArticles(slug);
     main.innerHTML = html;

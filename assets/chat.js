@@ -245,6 +245,40 @@
     }).join("") + "</ul></div>" : "");
   }
 
+  // Salaires : « salaire d'un médecin », « combien gagne un patron de garage au nord »
+  var SAL_WORDS = ["salaire", "salaires", "paye", "payes", "gagne", "gagner", "gagnent", "remuneration", "remunere"];
+  function money(n) { return Math.round(n).toLocaleString("fr-FR").replace(/ | /g, " ") + " $"; }
+  function salaryAnswer(q) {
+    var S = G.salaires, text = flat(q);
+    if (!S || !SAL_WORDS.some(function (w) { return hasTerm(text, w); })) return null;
+    var groups = [], rows = [];
+    S.sections.forEach(function (sec) {
+      sec.groups.forEach(function (g) {
+        var words = flat(g.title).trim().split(" ").filter(function (w) { return w.length >= 3 && w !== "les"; });
+        if (words.some(function (w) { return hasTerm(text, w); })) groups.push(g);
+        g.rows.forEach(function (r) {
+          var name = flat(r[0]).trim().replace(/s$/, "");
+          if (name.length >= 3 && text.indexOf(" " + name) >= 0) rows.push({ g: g, r: r });
+        });
+      });
+    });
+    var zone = hasTerm(text, "nord") ? 2 : hasTerm(text, "sud") ? 1 : 0;
+    function line(g, r) {
+      var v = g.zones ? (zone ? money(r[zone]) + " (" + (zone === 1 ? "Sud" : "Nord") + ")" : money(r[1]) + " au Sud, " + money(r[2]) + " au Nord") : money(r[1]);
+      return "<li><b>" + esc(r[0]) + "</b> (" + esc(g.title) + ") : " + v + "</li>";
+    }
+    var picked;
+    if (groups.length) {
+      var inGroup = rows.filter(function (x) { return groups.indexOf(x.g) >= 0; });
+      picked = inGroup.length ? inGroup : [].concat.apply([], groups.map(function (g) { return g.rows.map(function (r) { return { g: g, r: r }; }); }));
+    } else {
+      picked = rows;
+    }
+    if (!picked.length) return null;
+    return "<p>Selon la grille des salaires :</p><ul>" + picked.slice(0, 20).map(function (x) { return line(x.g, x.r); }).join("") + "</ul>" +
+      '<div class="chat-more"><b>Voir</b><ul><li><a href="#/salaires">Grille des salaires</a></li></ul></div>';
+  }
+
   // Demandes d'aide à contourner la loi : toujours refusées
   var ILLEGAL = /\b(comment|astuce|astuces|moyen|facon|aide|aider|peut on|je peux)\b.*\b(frauder|blanchir|cacher|planquer|dissimuler|contourner|echapper|eviter l irs|eviter un controle|eviter les impots|ne pas declarer|pas me faire)\b/;
 
@@ -259,6 +293,8 @@
     }
     var direct = byId(q);
     if (direct) return answer({ d: direct }, tokens(q));
+    var sal = salaryAnswer(q);
+    if (sal) return sal;
     var it = findIntent(q);
     return it ? intentAnswer(it) : REFUS;
   }

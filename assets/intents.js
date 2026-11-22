@@ -113,7 +113,7 @@ window.IRS_INTENTS = [
     answer: "Chaque entreprise doit avoir un règlement intérieur validé par un avocat (sécurité, harcèlement et discriminations, échelle des sanctions, tenues, véhicules et EPI). Inexistant : 1 000 $ ; incomplet : avertissement.",
     refs: ["CE.11", "B.16"] },
   { all: [["salaire", "salaires", "grille", "paye"]],
-    answer: "Les salaires suivent la grille obligatoire (disponible auprès du Référent Entreprise ou de l'IRS), et chaque versement doit être tracé. Non-respect de la grille : 3 000 $ + le trop-perçu + 10 % d'intérêts, par employé.",
+    answer: "Les salaires suivent la grille obligatoire (catégorie « Grille des salaires »), et chaque versement doit être tracé. Pour un poste précis, demandez par exemple « salaire d'un médecin » ou « salaire patron garage nord ». Non-respect de la grille : 3 000 $ + le trop-perçu + 10 % d'intérêts, par employé.",
     refs: ["I.7", "B.9"] },
   { all: [["benevole", "benevoles", "benevolat"]],
     answer: "Le bénévolat n'est autorisé que dans les associations à but non lucratif et les services publics. Un « bénévole » dans une entreprise commerciale est considéré comme un employé non déclaré.",
