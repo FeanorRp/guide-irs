@@ -2,7 +2,7 @@
    Chaque entrée : "all" = groupes de mots qui doivent TOUS apparaître dans la question
    (un seul mot par groupe suffit, comparaison sans accents, par début de mot).
    "answer" = réponse rédigée ; "refs" = articles à ouvrir.
-   Les entrées avec le plus de groupes sont testées en premier. */
+   Les entrées avec le plus de groupes sont testées en premier ("prio: 1" passe avant tout). */
 window.IRS_INTENTS = [
   // ---------- Pouvoirs de l'IRS ----------
   { all: [["controle", "controler", "verifier", "verification", "inspect"], ["vehicule", "voiture", "voitures", "vehicules"]],
@@ -69,7 +69,7 @@ window.IRS_INTENTS = [
 
   // ---------- Liquide, fraude ----------
   { all: [["liquide", "cash", "espece", "especes", "billets"]],
-    answer: "Les paiements en liquide de plus de 2 000 $ sont interdits. Détenir plus de 2 000 $ en liquide sans justificatif : saisie de l'argent + amende de 50 % (art. 7.1).\nTout dépôt ou retrait de plus de 5 000 $ sur un compte d'entreprise doit pouvoir être justifié. Fractionner un paiement pour rester sous le seuil (structuration) : 5 000 $ + saisie.",
+    answer: "Les paiements en liquide de plus de 1 000 $ sont interdits. Détenir plus de 2 000 $ en liquide sans justificatif : saisie de l'argent + amende de 50 % (art. 7.1).\nTout dépôt ou retrait de plus de 5 000 $ sur un compte d'entreprise doit pouvoir être justifié. Fractionner un paiement pour rester sous le seuil (structuration) : 5 000 $ + saisie.",
     refs: ["CE.2", "B.5"] },
   { all: [["blanchiment", "blanchir", "blanchi"]],
     answer: "Le blanchiment est puni d'une amende de 5 $ par dollar blanchi, plus la prison fédérale (art. 7.2).",
@@ -98,19 +98,19 @@ window.IRS_INTENTS = [
     answer: "Le solde de tout compte est dû quel que soit le motif de départ : sous 24h après un licenciement, le dernier jour pour une démission avec préavis, sous 72h sans préavis. Retard volontaire : 1/7e du salaire hebdomadaire par jour de retard (30 jours maximum).",
     refs: ["CE.18"] },
   { all: [["age", "ans", "mineur", "mineurs", "jeune"]],
-    answer: "Stagiaire : 14 ans. CDD / CDI : 16 ans. Poste de direction : 21 ans.\n21 ans minimum aussi pour le service public, la mairie, le gouvernement, barman et les postes dangereux (chantier, mine, remorquage, transport de fonds, armes ou explosifs).",
+    answer: "L'âge minimum pour travailler est de 21 ans, pour tout poste, contrat ou stage.",
     refs: ["CE.10"] },
   { all: [["stage", "stagiaire", "stagiaires"]],
-    answer: "Un stage dure au plus 1 mois, avec un tuteur désigné. La rémunération est facultative (jusqu'à 80 %). Un stagiaire non payé ne peut ni remplacer un employé ni travailler seul pour produire du chiffre d'affaires, sinon le stage devient un emploi payé au barème.",
+    answer: "Un contrat de stage écrit, rédigé par un avocat, est obligatoire. Un stage dure au plus 1 mois, avec un tuteur désigné. La rémunération est facultative (jusqu'à 80 %). Un stagiaire non payé ne peut ni remplacer un employé ni travailler seul pour produire du chiffre d'affaires, sinon le stage devient un emploi payé au barème.",
     refs: ["CE.20"] },
   { all: [["double"], ["emploi", "emplois", "travail", "boulot", "job"]],
-    answer: "Le double emploi est interdit, sauf dans les bars et boîtes de nuit.",
+    answer: "Le double emploi est interdit, sauf dans les bars et boîtes de nuit.\nException : décorateur ou artiste musical en job externe, si ce n'est pas l'activité principale (temps plein exclu). Pour le décorateur : validation du Directeur du Dynasty 8, puis attestation signée par son patron remise au Bureau du Maire.",
     refs: ["CC.2"] },
   { all: [["contrat", "contrats"], ["travail", "embauche", "employe", "employes"]],
-    answer: "Un contrat écrit, rédigé par un avocat, est obligatoire pour chaque employé, qui est aussi inscrit au registre du personnel. Contrat absent ou obsolète : 500 $ par contrat (1 000 $ en récidive). Un contrat antidaté ou falsifié est un faux (art. 15.2).",
+    answer: "Un contrat écrit, rédigé uniquement par un avocat, est obligatoire pour chaque employé, avec une visite médicale. Les deux doivent être faits pendant la période d'essai (1 semaine). Au-delà : 500 $ par contrat (1 000 $ en récidive). Un contrat antidaté ou falsifié est un faux (art. 15.2).",
     refs: ["CE.9", "B.8"] },
   { all: [["reglement", "deontologie"]],
-    answer: "Chaque entreprise doit avoir un règlement intérieur validé par un avocat (sécurité, harcèlement et discriminations, échelle des sanctions, tenues, véhicules et EPI). Inexistant : 1 000 $ ; incomplet : avertissement.",
+    answer: "Chaque entreprise doit avoir un règlement intérieur validé par un avocat (sécurité, harcèlement et discriminations, échelle des sanctions, tenues et véhicules de fonction). Inexistant : 1 000 $ ; incomplet : avertissement.",
     refs: ["CE.11", "B.16"] },
   { all: [["salaire", "salaires", "grille", "paye"]],
     answer: "Les salaires suivent la grille obligatoire (catégorie « Grille des salaires »), et chaque versement doit être tracé. Pour un poste précis, demandez par exemple « salaire d'un médecin » ou « salaire patron garage nord ». Non-respect de la grille : 3 000 $ + le trop-perçu + 10 % d'intérêts, par employé.",
@@ -121,19 +121,26 @@ window.IRS_INTENTS = [
   { all: [["emploi", "employe", "employes"], ["fictif", "fictifs", "fantome", "fantomes"]],
     answer: "Être payé sans travailler, ou payer une personne inscrite au registre qui ne travaille pas, est un détournement de fonds (2 $ par dollar + prison fédérale). Le bénéficiaire et l'organisateur sont poursuivis et les sommes doivent être remboursées.",
     refs: ["CE.12"] },
-  { all: [["epi", "protection", "casque", "securite"]],
-    answer: "L'employeur évalue les risques, fournit gratuitement les équipements de protection adaptés et forme les employés. Les employés doivent les porter.",
-    refs: ["CE.30"] },
   { all: [["fonction", "public", "publique", "police", "casier"]],
     answer: "La fonction publique ne recrute que des personnes au casier vierge de tout délit majeur ou crime ; une telle condamnation entraîne un renvoi immédiat. Une fois le casier effacé par un juge, la personne peut à nouveau se porter candidate.",
     refs: ["CE.28"] },
+
+  { all: [["essai"]],
+    answer: "La période d'essai dure 1 semaine. Pendant cette semaine, l'employeur fait passer la visite médicale et signer le contrat de travail, sinon les sanctions prévues s'appliquent. Chacun peut rompre le contrat librement pendant l'essai ; les heures travaillées restent payées.",
+    refs: ["CE.19", "B.8"] },
+  { all: [["decorateur", "decoratrice", "artiste", "musicien", "chanteur", "rappeur"]],
+    answer: "Décorateur ou artiste musical en job externe : ce n'est pas un double emploi, si ce n'est pas l'activité principale (temps plein exclu). Pour le décorateur : validation du Directeur du Dynasty 8, puis attestation signée par son patron remise au Bureau du Maire.",
+    refs: ["CC.2"] },
+  { prio: 1, all: [["association", "associations", "caritative", "caritatives", "oeuvre", "charite", "lucratif"]],
+    answer: "Les associations à but non lucratif et les œuvres caritatives déclarent et paient leurs impôts comme les entreprises.",
+    refs: ["I.1"] },
 
   // ---------- Véhicules ----------
   { all: [["vehicule", "voiture", "vehicules", "voitures"], ["entreprise", "societe", "boite", "fonction", "service"], ["achat", "acheter", "achete", "acquerir", "acquisition", "vendre", "vente", "revendre"]],
     answer: "Toute acquisition d'un véhicule par une entreprise doit être homologuée par l'IRS (demande avec devis, réponse sous une semaine). Sans accord : 70 % du prix d'achat + saisie.\nÀ la revente : 60 % minimum du prix concessionnaire, argent versé sur le compte de l'entreprise, contrat enregistré au registre de l'IRS.",
     refs: ["CE.13", "B.11"] },
   { all: [["vehicule", "voiture"], ["fonction", "service"]],
-    answer: "Un véhicule de fonction sert au travail. L'usage personnel n'est permis qu'avec l'accord de la direction, et il doit alors être déclaré comme avantage. Les amendes sont à la charge du conducteur.",
+    answer: "Un véhicule de fonction sert uniquement au travail : l'usage personnel est interdit et entraîne des mesures disciplinaires. Les amendes sont à la charge du conducteur.",
     refs: ["CE.27"] },
   { all: [["louer", "location", "loue"]],
     answer: "La location de véhicules entre particuliers est interdite, sauf par une auto-entreprise de location déclarée à l'IRS.",
@@ -148,7 +155,7 @@ window.IRS_INTENTS = [
     answer: "Le don et l'échange de véhicules sont interdits. Ils sont traités comme une vente à 0 $ : amende égale à la somme manquante pour atteindre 60 % du prix concessionnaire.",
     refs: ["CC.1", "B.12"] },
   { all: [["vehicule", "voiture", "vehicules", "voitures", "occasion"], ["vendre", "vente", "vend", "acheter", "achat", "achete", "revendre", "revente", "prix"]],
-    answer: "Entre particuliers :\n- contrat rédigé par un avocat et enregistré au registre de l'IRS (sinon le véhicule reste au vendeur) ;\n- 2 transactions maximum sur 30 jours glissants ;\n- prix minimum : 60 % du prix concessionnaire, et pas de revente plus chère que le prix d'achat ;\n- liquide limité à 2 000 $ ;\n- don, échange et prête-nom interdits.\nVente sous 60 % : amende égale à la somme manquante, due par le vendeur et l'acheteur.",
+    answer: "Entre particuliers :\n- contrat rédigé par un avocat et enregistré au registre de l'IRS (sinon le véhicule reste au vendeur) ;\n- 2 transactions maximum sur 30 jours glissants ;\n- prix minimum : 60 % du prix concessionnaire, et pas de revente plus chère que le prix d'achat ;\n- liquide limité à 1 000 $ ;\n- don, échange et prête-nom interdits.\nVente sous 60 % : amende égale à la somme manquante, due par le vendeur et l'acheteur.",
     refs: ["CC.1", "B.12"] },
 
   // ---------- Entreprise ----------
@@ -168,7 +175,7 @@ window.IRS_INTENTS = [
     answer: "Une publicité doit être honnête : prix affichés = prix facturés, durée des promotions indiquée, qualités vérifiables, vrai poste et vrai salaire dans une offre d'emploi. Annonce mensongère : 5 000 $ (10 000 $ en récidive).",
     refs: ["CE.24", "B.20"] },
   { all: [["facture", "factures", "facturer"]],
-    answer: "Toute vente se fait par facture officielle (date, entreprise, client, désignation, montant). Les pawnshops en sont dispensés mais tiennent un registre des achats.",
+    answer: "Toute vente se fait par facture officielle (date, entreprise, client, désignation, montant), et la tenue des comptes est obligatoire : chaque entrée et sortie d'argent est enregistrée et justifiée.",
     refs: ["CE.3"] },
   { all: [["partenariat", "partenaire"]],
     answer: "Un contrat de partenariat écrit, rédigé par un avocat et signé par les deux entreprises, est obligatoire. Absent ou obsolète : 1 000 $ par contrat.",

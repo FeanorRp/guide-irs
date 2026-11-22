@@ -221,7 +221,7 @@
   }
 
   var INTENTS = (window.IRS_INTENTS || []).map(function (it, i) { return { it: it, i: i }; })
-    .sort(function (a, b) { return b.it.all.length - a.it.all.length || a.i - b.i; })
+    .sort(function (a, b) { return (b.it.prio || 0) - (a.it.prio || 0) || b.it.all.length - a.it.all.length || a.i - b.i; })
     .map(function (x) { return x.it; });
 
   function findIntent(q) {
