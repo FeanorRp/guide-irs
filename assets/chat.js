@@ -208,28 +208,59 @@
     return html;
   }
 
+  // ---------- Questions connues (assets/intents.js) ----------
+
+  // Texte comparable : minuscules, sans accents, tirets et apostrophes remplacés par des espaces
+  function flat(s) { return " " + norm(s).replace(/[^a-z0-9]+/g, " ").trim() + " "; }
+
+  // Mot court (< 5 lettres) : mot entier, pluriel accepté. Mot long : début de mot (controle -> controler).
+  function hasTerm(text, term) {
+    var t = flat(term).trim();
+    if (t.length < 5) return text.indexOf(" " + t + " ") >= 0 || text.indexOf(" " + t + "s ") >= 0 || text.indexOf(" " + t + "x ") >= 0;
+    return text.indexOf(" " + t) >= 0;
+  }
+
+  var INTENTS = (window.IRS_INTENTS || []).map(function (it, i) { return { it: it, i: i }; })
+    .sort(function (a, b) { return b.it.all.length - a.it.all.length || a.i - b.i; })
+    .map(function (x) { return x.it; });
+
+  function findIntent(q) {
+    var text = flat(q);
+    for (var n = 0; n < INTENTS.length; n++) {
+      var ok = INTENTS[n].all.every(function (group) {
+        return group.some(function (term) { return hasTerm(text, term); });
+      });
+      if (ok) return INTENTS[n];
+    }
+    return null;
+  }
+
+  var BY_ID = {};
+  DOCS.forEach(function (d) { if (!BY_ID[d.id]) BY_ID[d.id] = d; });
+
+  function intentAnswer(it) {
+    var refs = (it.refs || []).map(function (id) { return BY_ID[id]; }).filter(Boolean);
+    return renderLines(lines(it.answer)) + (refs.length ? '<div class="chat-more"><b>Articles</b><ul>' + refs.map(function (d) {
+      return '<li><a href="' + d.href + '">' + esc(d.title) + "</a> <small>" + esc(d.where) + " - " + esc(d.id) + "</small></li>";
+    }).join("") + "</ul></div>" : "");
+  }
+
+  // Demandes d'aide à contourner la loi : toujours refusées
+  var ILLEGAL = /\b(comment|astuce|astuces|moyen|facon|aide|aider|peut on|je peux)\b.*\b(frauder|blanchir|cacher|planquer|dissimuler|contourner|echapper|eviter l irs|eviter un controle|eviter les impots|ne pas declarer|pas me faire)\b/;
+
+  var REFUS = "<p>Je ne peux pas répondre à cette question.</p>" +
+    "<p>Je réponds aux questions sur les impôts, les contrôles de l'IRS, les amendes, l'emploi, les entreprises et la vente de véhicules. " +
+    "Reformulez avec ces mots, tapez un numéro d'article (<i>CE.16</i>, <i>art 7.1</i>), ou adressez-vous à un agent de l'IRS.</p>";
+
   function reply(q) {
+    if (ILLEGAL.test(flat(q))) {
+      return "<p>L'IRS ne donne aucun conseil pour contourner la loi ou échapper à l'impôt.</p>" +
+        "<p>Une erreur peut être régularisée : une déclaration spontanée avant tout contrôle réduit les pénalités et évite les poursuites pénales.</p>";
+    }
     var direct = byId(q);
     if (direct) return answer({ d: direct }, tokens(q));
-    var r = search(q);
-    if (!r.hits.length) {
-      return "<p>Je n'ai rien trouvé dans le guide pour cette question.</p>" +
-        "<p>Essaie avec des mots du guide : <i>liquide, licenciement, contrôle, saisie, stage, véhicule d'occasion</i>, " +
-        "ou un numéro d'article (<i>CE.24</i>, <i>art 7.1</i>).</p>";
-    }
-    var top = r.hits[0];
-    var html = "";
-    if (top.matched < r.keys.length && r.keys.length > 1) {
-      html += '<p class="chat-warn">Réponse partielle : tous les mots de la question ne figurent pas dans cet article.</p>';
-    }
-    html += answer(top, r.keys);
-    var more = r.hits.slice(1).filter(function (h) { return h.score >= top.score * 0.45; }).slice(0, 3);
-    if (more.length) {
-      html += '<div class="chat-more"><b>Voir aussi</b><ul>' + more.map(function (h) {
-        return '<li><a href="' + h.d.href + '">' + esc(h.d.title) + "</a> <small>" + esc(h.d.where) + "</small></li>";
-      }).join("") + "</ul></div>";
-    }
-    return html;
+    var it = findIntent(q);
+    return it ? intentAnswer(it) : REFUS;
   }
 
   // ---------- Interface ----------
@@ -259,11 +290,10 @@
     log.scrollTop = log.scrollHeight;
   }
 
-  var SUGGEST = ["Combien pour du liquide non justifié ?", "Peut-on licencier un employé qui a témoigné ?",
-    "L'IRS peut-il entrer sans mandat ?", "Âge minimum pour être barman", "Retard de déclaration d'impôts"];
+  var SUGGEST = ["L'IRS peut-il contrôler mon véhicule ?", "Quand déclarer mes impôts ?",
+    "Que risque-t-on avec du liquide ?", "Comment contester une amende ?", "Vendre ma voiture à un particulier"];
 
-  push("bot", "<p>Pose une question sur le guide : je cherche la réponse dans les articles, le barème et le code pénal.</p>" +
-    '<p class="chat-note">Réponses tirées du texte du guide, sans interprétation. Le code pénal de San Andreas prime.</p>' +
+  push("bot", "<p>Bonjour, je suis l'assistant de l'IRS. Posez votre question sur les impôts, les contrôles, les amendes, l'emploi ou les véhicules.</p>" +
     '<div class="chat-chips">' + SUGGEST.map(function (s) {
       return '<button type="button" class="chip">' + esc(s) + "</button>";
     }).join("") + "</div>");

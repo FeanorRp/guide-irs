@@ -143,7 +143,6 @@ kbd {
 .card-body ul { margin: 0 0 10px; padding-left: 20px; }
 .card-body h4 { margin: 12px 0 4px; font-size: 13px; color: var(--accent); }
 .card-body h4:first-child { margin-top: 0; }
-.copy { margin-left: 8px; font-size: 11px; padding: 2px 8px; }
 
 .badge {
   background: var(--prop-bg);

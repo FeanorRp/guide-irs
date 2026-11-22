@@ -80,8 +80,7 @@
   function card(slug, a) {
     return '<details class="card" open id="' + esc(a.id) + '" data-search="' +
       esc(norm([a.title, a.body, a.penal, a.effect].join(" "))) + '">' +
-      "<summary>" + esc(a.title) + ' <span class="ref">- ' + esc(a.id) + "</span>" +
-      '<button class="btn copy" data-link="#/' + slug + "/" + esc(a.id) + '">Copier le lien</button></summary>' +
+      "<summary>" + esc(a.title) + ' <span class="ref">- ' + esc(a.id) + "</span></summary>" +
       '<div class="card-body">' + fmt(a.body) +
       sub("effect", "Sanction / effet", a.effect, true) +
       sub("penal", "Code pénal", a.penal) +
@@ -116,7 +115,6 @@
       '<div><div class="hero-kicker">État de San Andreas</div><h1>Guide de l\'Internal Revenue Service</h1>' +
       '<div class="stars">★ ★ ★</div><div class="updated">Mise à jour : 22/11/2026</div></div></div>' +
       '<div class="notice">' + fmt(G.organisation.intro) + "</div>" +
-      '<div class="notice">Le code pénal de San Andreas prime sur ce guide.</div>' +
       '<div class="grid">' + tiles + "</div>";
   }
 
@@ -165,7 +163,7 @@
   function pageCodePenal() {
     var d = G.codePenal;
     var html = head(d.label, "", true) +
-      '<div class="notice">Extraits du code pénal de San Andreas, qui prime sur ce guide. Cliquer sur un groupe pour l\'ouvrir.</div>';
+      '<div class="notice">Extraits du code pénal de San Andreas. Cliquer sur un groupe pour l\'ouvrir.</div>';
     d.groups.forEach(function (g) {
       html += '<details class="cp-group"><summary>' + esc(g.title) + " <span>" + g.items.length + "</span></summary>" +
         '<div class="table-wrap"><table><thead><tr><th>Article</th><th>Résumé</th><th>Usage pour l\'IRS</th></tr></thead><tbody>' +
@@ -391,16 +389,6 @@
       window.scrollTo(0, 0);
     }
   }
-
-  main.addEventListener("click", function (e) {
-    var btn = e.target.closest(".copy");
-    if (!btn) return;
-    e.preventDefault();
-    var url = location.href.split("#")[0] + btn.dataset.link;
-    navigator.clipboard.writeText(url);
-    btn.textContent = "Lien copié";
-    setTimeout(function () { btn.textContent = "Copier le lien"; }, 1500);
-  });
 
   buildIndex();
   window.addEventListener("hashchange", route);
